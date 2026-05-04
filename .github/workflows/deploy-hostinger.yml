@@ -22,7 +22,6 @@ jobs:
       VITE_SB_VISITAS_KEY: ${{ secrets.VITE_SB_VISITAS_KEY }}
       VITE_SB_CATRACA_URL: ${{ secrets.VITE_SB_CATRACA_URL }}
       VITE_SB_CATRACA_KEY: ${{ secrets.VITE_SB_CATRACA_KEY }}
-      NODE_ENV: production
 
     steps:
       - name: Checkout repository
@@ -39,6 +38,8 @@ jobs:
 
       - name: Build production bundle
         run: npm run build
+        env:
+          NODE_ENV: production
 
       - name: Prepare deploy package
         run: |
