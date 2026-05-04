@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,13 +41,14 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Upload deploy artifact
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: hostinger-deploy-package
+          name: dist
           path: dist
 
-      - name: Deploy files over FTP
+      - name: Deploy via FTP
+        if: ${{ secrets.HOSTINGER_FTP_SERVER != '' }}
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.HOSTINGER_FTP_SERVER }}
