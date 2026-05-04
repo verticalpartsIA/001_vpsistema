@@ -46,14 +46,3 @@ jobs:
         with:
           name: dist
           path: dist
-
-      - name: Deploy via FTP
-        if: ${{ secrets.HOSTINGER_FTP_SERVER != '' }}
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.HOSTINGER_FTP_SERVER }}
-          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
-          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
-          local-dir: dist/
-          server-dir: ${{ secrets.HOSTINGER_FTP_REMOTE_DIR }}
-          dangerous-clean-slate: false
