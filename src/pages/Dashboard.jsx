@@ -54,22 +54,22 @@ export default function Dashboard({ user, onNavigateAdmin, onNavigateCeo, onNavi
       setBlocked(mod)
       return
     }
-    // Para subsistemas vpsistema.com e verticalparts.com, injetar SSO token automaticamente
+    // SSO via edge function para subdomínios de vpsistema.com / verticalparts.com
     const SSO_DOMAINS = ['vpsistema.com', 'verticalparts.com']
     if (mod.url && SSO_DOMAINS.some(d => mod.url.includes(d))) {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session?.access_token && session?.refresh_token) {
-          const target = new URL(mod.url)
-          // Injeta access + refresh → subsistema cria sessão SSO via /api/sso
-          target.searchParams.set('sso_token',   session.access_token)
-          target.searchParams.set('sso_refresh', session.refresh_token)
+        const targetApp = new URL(mod.url).hostname.split('.')[0]
+        const { data, error } = await supabase.functions.invoke('sso-proxy', {
+          body: { targetApp },
+        })
+        if (!error && data?.actionLink) {
           logActivity({ action: 'module_access', target: mod.name })
-          window.open(target.toString(), '_blank', 'noopener')
+          window.open(data.actionLink, '_blank', 'noopener')
           return
         }
-      } catch (_) { /* fallthrough */ }
+      } catch (_) { /* fallthrough para abertura direta */ }
     }
+    logActivity({ action: 'module_access', target: mod.name })
     window.open(mod.url, '_blank', 'noopener')
   }
 
