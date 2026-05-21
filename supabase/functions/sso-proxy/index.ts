@@ -10,12 +10,12 @@ const APPS: Record<string, { url: string; serviceKeyEnv: string; redirectTo: str
   vprequisicoes: {
     url: 'https://vvgcrhtmzvssfdazkkzk.supabase.co',
     serviceKeyEnv: 'VPREQ_SERVICE_KEY',
-    redirectTo: 'https://vprequisicoes.vpsistema.com/',
+    redirectTo: 'https://vprequisicoes.vpsistema.com',
   },
   posvenda360: {
     url: 'https://jkbklzlbhhfnamaeislb.supabase.co',
     serviceKeyEnv: 'PV360_SERVICE_KEY',
-    redirectTo: 'https://posvenda360.vpsistema.com/',
+    redirectTo: 'https://posvenda360.vpsistema.com',
   },
 }
 
