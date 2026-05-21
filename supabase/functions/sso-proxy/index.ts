@@ -17,6 +17,31 @@ const APPS: Record<string, { url: string; serviceKeyEnv: string; redirectTo: str
     serviceKeyEnv: 'PV360_SERVICE_KEY',
     redirectTo: 'https://posvenda360.vpsistema.com',
   },
+  vpclick: {
+    url: 'https://sfpnjwllcmentoocylow.supabase.co',
+    serviceKeyEnv: 'VPCLICK_SERVICE_KEY',
+    redirectTo: 'https://vpclick.vpsistema.com',
+  },
+  propostas: {
+    url: 'https://wfwraicrwazjblyvtzfu.supabase.co',
+    serviceKeyEnv: 'PROPOSTAS_SERVICE_KEY',
+    redirectTo: 'https://propostas.vpsistema.com',
+  },
+  visitas: {
+    url: 'https://bvvnoapdclxhuygptbza.supabase.co',
+    serviceKeyEnv: 'VISITAS_SERVICE_KEY',
+    redirectTo: 'https://visitas.vpsistema.com',
+  },
+  catraca: {
+    url: 'https://ipqtbqstasirxlcoapns.supabase.co',
+    serviceKeyEnv: 'CATRACA_SERVICE_KEY',
+    redirectTo: 'https://catraca.vpsistema.com',
+  },
+  'cotacao-importacao': {
+    url: 'https://jbwgjegelhoueygcvafq.supabase.co',
+    serviceKeyEnv: 'COTACAO_SERVICE_KEY',
+    redirectTo: 'https://cotacao-importacao.vpsistema.com',
+  },
 }
 
 serve(async (req: Request) => {
