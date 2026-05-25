@@ -11,7 +11,7 @@
 
 ## Por que este projeto existe?
 
-A VerticalParts opera múltiplos sistemas internos — WMS, comercial, engenharia, suprimentos, suporte — cada um hospedado em um subdomínio separado. Antes do vpsistema, cada colaborador precisava memorizar URLs diferentes, fazer login individualmente em cada sistema e não havia controle centralizado de quem tinha acesso a quê.
+A VerticalParts opera múltiplos sistemas internos — cotação de importação, comercial, engenharia, suprimentos, suporte — cada um hospedado em um subdomínio separado. Antes do vpsistema, cada colaborador precisava memorizar URLs diferentes, fazer login individualmente em cada sistema e não havia controle centralizado de quem tinha acesso a quê.
 
 O **vpsistema.com** resolve isso com:
 

@@ -1,6 +1,6 @@
 # 🚀 Relatório de Lançamento — 24 de Maio de 2026
 
-> **Projeto:** VP Gestão · WMS VerticalParts
+> **Projeto:** VP PRD — Plataforma de Cotação de Importação · VerticalParts
 > **Data:** 24/05/2026
 > **Responsável técnico:** Gelson Simões + Claude Sonnet 4.6
 > **Marco:** Primeira entrada em produção — `https://vpprd.vpsistema.com` ao ar 🎉
@@ -17,7 +17,7 @@ construído ao longo de semanas de trabalho intenso — foi colocado em produç�
 Da tela do computador para o ar. Do código para o mundo real.
 Do `localhost` para `https://vpprd.vpsistema.com`.
 
-Hoje foi o **Hello World** do WMS VerticalParts.
+Hoje foi o **Hello World** do VP PRD — Plataforma de Cotação de Importação da VerticalParts.
 
 ---
 
@@ -78,7 +78,7 @@ Foi necessário criar a infraestrutura mínima do zero.
 {
   "name": "vp-gestao",
   "version": "1.0.0",
-  "description": "VP Gestão — VerticalParts WMS",
+  "description": "VP PRD — Plataforma de Cotação de Importação · VerticalParts",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -154,7 +154,7 @@ Deploy automático a cada `git push` na branch `main`.
 ### 🔗 ETAPA 4 — Conexão com o Supabase real
 
 O projeto já tinha o cliente Supabase configurado em `src/supabase.js`
-apontando para o projeto **`jxtqwzmpgofwctqajewt`** (VPPRD — WMS VerticalParts).
+apontando para o projeto **`jxtqwzmpgofwctqajewt`** (VPPRD — Cotação de Importação).
 
 A função `loadDashboardData()` carrega dados reais das tabelas:
 
@@ -416,8 +416,8 @@ Este não é apenas um deploy técnico.
 informações dispersas em um **sistema integrado, com dados reais, acessível de
 qualquer lugar, com autenticação segura, protegido por SSO**.
 
-A VerticalParts agora tem um WMS próprio. Construído do zero. Com a identidade
-visual da empresa. Conectado ao banco de dados real. Com dados ao vivo.
+A VerticalParts agora tem uma plataforma de cotação de importação própria. Construída do zero.
+Com a identidade visual da empresa. Conectada ao banco de dados real. Com dados ao vivo.
 
 ```
 24/05/2026 — 21h51 — Curitiba/SP — Brasil

@@ -28,7 +28,7 @@ WHERE slug = 'cotacao-importacao';
 
 ### 2. SSO Guard no projeto vpprd (subsistema)
 
-O projeto `vpprd_claudeDesigner` (WMS VerticalParts) não tinha nenhuma proteção de acesso.
+O projeto `vpprd_claudeDesigner` (VP PRD — Cotação de Importação) não tinha nenhuma proteção de acesso.
 Qualquer pessoa que soubesse a URL `https://vpprd.vpsistema.com/` acessava o sistema direto.
 
 Foi implementado um **guard SSO** no arquivo `src/supabase.js` (commit `8e80774`):
