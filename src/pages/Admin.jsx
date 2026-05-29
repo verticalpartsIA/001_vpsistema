@@ -45,6 +45,9 @@ export default function Admin({ onBack }) {
   const [deleting,      setDeleting]      = useState(false)
   const [deleteMsg,     setDeleteMsg]     = useState(null)
 
+  // Avatar update inline
+  const [avatarUploading, setAvatarUploading] = useState({}) // { [userId]: bool }
+
   // Feedback inline
   const [actionMsg, setActionMsg] = useState(null)
 
@@ -285,6 +288,37 @@ export default function Admin({ onBack }) {
     setTimeout(() => setActionMsg(null), 4000)
   }
 
+  async function handleAvatarUpdate(userId, file) {
+    if (!file) return
+    setAvatarUploading(prev => ({ ...prev, [userId]: true }))
+
+    const ext  = file.name.split('.').pop() || 'jpg'
+    const path = `${userId}.${ext}`
+
+    const { error: uploadErr } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true, contentType: file.type })
+
+    if (!uploadErr) {
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+      const { error: updateErr } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', userId)
+
+      if (!updateErr) {
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, avatar_url: publicUrl } : u))
+        setActionMsg({ type: 'success', text: 'Avatar atualizado com sucesso!' })
+        setTimeout(() => setActionMsg(null), 3000)
+      } else {
+        setActionMsg({ type: 'error', text: 'Erro ao salvar o avatar.' })
+        setTimeout(() => setActionMsg(null), 3000)
+      }
+    }
+
+    setAvatarUploading(prev => ({ ...prev, [userId]: false }))
+  }
+
   const filtered = users.filter(u => {
     const matchSearch = !search ||
       u.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -428,14 +462,39 @@ export default function Admin({ onBack }) {
                     <tr key={u.id} className={`transition-colors hover:bg-surface/40 ${!u.is_active ? 'opacity-50' : ''}`}>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-surface-border flex items-center justify-center overflow-hidden shrink-0">
-                            {u.avatar_url ? (
-                              <img src={u.avatar_url} alt={u.name} className="w-full h-full object-cover"
-                                   onError={e => { e.target.style.display = 'none' }} />
-                            ) : (
-                              <User className="w-4 h-4 text-slate-500" />
+                          {/* Avatar clicável com overlay "Trocar avatar" */}
+                          <label
+                            className="relative w-9 h-9 rounded-full overflow-hidden shrink-0 cursor-pointer group"
+                            title="Trocar avatar"
+                          >
+                            <div className="w-full h-full bg-surface-border flex items-center justify-center">
+                              {avatarUploading[u.id] ? (
+                                <Loader2 className="w-4 h-4 text-brand animate-spin" />
+                              ) : u.avatar_url ? (
+                                <img src={u.avatar_url} alt={u.name} className="w-full h-full object-cover"
+                                     onError={e => { e.target.style.display = 'none' }} />
+                              ) : (
+                                <User className="w-4 h-4 text-slate-500" />
+                              )}
+                            </div>
+                            {/* Overlay hover */}
+                            {!avatarUploading[u.id] && (
+                              <div className="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100
+                                              transition-opacity flex flex-col items-center justify-center gap-0.5 rounded-full">
+                                <Camera className="w-3 h-3 text-white" />
+                                <span className="text-[7px] font-bold text-white uppercase tracking-wide leading-none">Trocar</span>
+                              </div>
                             )}
-                          </div>
+                            <input
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp"
+                              className="sr-only"
+                              onChange={e => {
+                                handleAvatarUpdate(u.id, e.target.files?.[0])
+                                e.target.value = ''
+                              }}
+                            />
+                          </label>
                           <div>
                             <p className="text-white text-sm font-medium leading-none">{u.name}</p>
                             <p className="text-slate-500 text-xs mt-0.5">{u.email}</p>
