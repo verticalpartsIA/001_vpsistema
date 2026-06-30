@@ -156,7 +156,14 @@ export default function Login({ forceMode = null, onResetDone = null, onExpiredD
       redirectTo: 'https://vpsistema.com',
     })
     setResetLoading(false)
-    if (resetError) { setError('Não foi possível enviar o e-mail. Verifique o endereço informado.'); return }
+    if (resetError) {
+      if (resetError.status === 429 || resetError.message?.toLowerCase().includes('rate limit')) {
+        setError('Muitas solicitações em pouco tempo. Aguarde alguns minutos e tente novamente.')
+      } else {
+        setError('Não foi possível enviar o e-mail. Verifique o endereço informado.')
+      }
+      return
+    }
     setResetSent(true)
   }
 
