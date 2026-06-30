@@ -1,5 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { SmtpClient } from 'https://deno.land/x/smtp@v0.7.0/mod.ts'
+import nodemailer from 'npm:nodemailer'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -46,23 +46,24 @@ Deno.serve(async (req) => {
       throw new Error('SMTP_PASSWORD não configurado nos secrets da Edge Function.')
     }
 
-    const client = new SmtpClient()
-    await client.connectTLS({
-      hostname: 'smtp.hostinger.com',
-      port: 465,
-      username: 'suporte@vpsistema.com',
-      password: smtpPassword,
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.hostinger.com',
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: 'suporte@vpsistema.com',
+        pass: smtpPassword,
+      },
     })
 
-    await client.send({
-      from: 'VerticalParts <suporte@vpsistema.com>',
+    await transporter.sendMail({
+      from: '"VerticalParts" <suporte@vpsistema.com>',
       to: email,
       subject: 'Redefina sua senha — VerticalParts',
-      content: recoveryLink,
+      text: recoveryLink,
       html: buildRecoveryEmailHtml(recoveryLink),
     })
-
-    await client.close()
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
