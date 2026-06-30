@@ -152,15 +152,17 @@ export default function Login({ forceMode = null, onResetDone = null, onExpiredD
     e.preventDefault()
     setError('')
     setResetLoading(true)
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'https://vpsistema.com',
+    const { data, error: invokeError } = await supabase.functions.invoke('send-recovery-email', {
+      body: { email },
     })
     setResetLoading(false)
+    const resetError = invokeError || data?.error
     if (resetError) {
-      if (resetError.status === 429 || resetError.message?.toLowerCase().includes('rate limit')) {
+      const msg = typeof resetError === 'string' ? resetError : (resetError.message || '')
+      if (msg.toLowerCase().includes('rate limit') || resetError.status === 429) {
         setError('Muitas solicitações em pouco tempo. Aguarde alguns minutos e tente novamente.')
       } else {
-        setError('Não foi possível enviar o e-mail. Verifique o endereço informado.')
+        setError('Não foi possível enviar o e-mail. Tente novamente em instantes.')
       }
       return
     }
