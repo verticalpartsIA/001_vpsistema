@@ -16,8 +16,28 @@ function App() {
   const [linkExpired, setLinkExpired] = useState(false)
 
   useEffect(() => {
-    // Detecta tipo do link na URL antes de qualquer coisa
-    const hash = window.location.hash
+    const hash   = window.location.hash
+    const params = new URLSearchParams(window.location.search)
+    const tokenHash = params.get('token')
+    const tokenType = params.get('type')
+
+    // Fluxo da edge function: ?token=HASH&type=recovery
+    // O link aponta para o app, não para o Supabase — Outlook não consome o token ao prefetchar
+    if (tokenHash && tokenType === 'recovery') {
+      window.history.replaceState({}, '', window.location.pathname)
+      supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' })
+        .then(({ error }) => {
+          if (error) {
+            setLinkExpired(true)
+          } else {
+            setIsRecovery(true)
+          }
+          setLoading(false)
+        })
+      return
+    }
+
+    // Fluxo legado via hash (implicit flow)
     if (hash.includes('error_code=otp_expired') || hash.includes('error=access_denied')) {
       window.history.replaceState({}, '', window.location.pathname)
       setLinkExpired(true)
@@ -25,7 +45,7 @@ function App() {
       return
     }
     if (hash.includes('type=invite') || hash.includes('type=recovery')) {
-      setIsRecovery(true) // reutiliza o mesmo fluxo de definir senha
+      setIsRecovery(true)
     }
 
     supabase.auth.getSession().then(({ data: { session } }) => {

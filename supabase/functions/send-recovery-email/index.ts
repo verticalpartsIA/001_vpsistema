@@ -31,14 +31,16 @@ Deno.serve(async (req) => {
       options: { redirectTo: 'https://vpsistema.com' },
     })
 
-    if (linkError || !data?.properties?.action_link) {
+    if (linkError || !data?.properties?.hashed_token) {
       // Retorna sucesso mesmo se o e-mail não existe (evita enumeração de usuários)
       return new Response(JSON.stringify({ success: true }), {
         status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const recoveryLink = data.properties.action_link
+    // Link aponta para o app, não para o Supabase /verify
+    // Isso evita que clientes de e-mail (Outlook) prefetchem e consumam o token OTP
+    const recoveryLink = `https://vpsistema.com?token=${data.properties.hashed_token}&type=recovery`
 
     // Envia o e-mail via SMTP Hostinger
     const smtpPassword = Deno.env.get('SMTP_PASSWORD')
