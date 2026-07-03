@@ -259,7 +259,7 @@ VITE_SUPABASE_ANON_KEY=eyJ...
 
 | Item                | Valor                                          |
 |---------------------|------------------------------------------------|
-| GitHub              | https://github.com/verticalpartsIA/vpsistema   |
+| GitHub              | https://github.com/verticalpartsIA/001_vpsistema |
 | GitHub Token (MCP)  | Ver `credenciais_master.md`                    |
 | Supabase Projeto    | `ubdkoqxfwcraftesgmbw`                         |
 | Supabase Anon Key   | Ver `credenciais_master.md`                    |
