@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { logActivity } from '../lib/activityLog'
 import {
   ArrowLeft, UserPlus, Search, Loader2, AlertCircle,
-  CheckCircle, XCircle, User, X, Send, Shield, Globe, Camera
+  CheckCircle, XCircle, User, X, Send, Shield, Globe, Camera, Pencil
 } from 'lucide-react'
 import { getModuleIcon } from '../lib/moduleIcons'
 
@@ -44,6 +44,12 @@ export default function Admin({ onBack }) {
   const [deleteUser,    setDeleteUser]    = useState(null)
   const [deleting,      setDeleting]      = useState(false)
   const [deleteMsg,     setDeleteMsg]     = useState(null)
+
+  // Modal editar nome
+  const [editNameUser,  setEditNameUser]  = useState(null)   // usuário sendo editado
+  const [editNameValue, setEditNameValue] = useState('')
+  const [editNameSaving, setEditNameSaving] = useState(false)
+  const [editNameMsg,   setEditNameMsg]   = useState(null)
 
   // Avatar update inline
   const [avatarUploading, setAvatarUploading] = useState({}) // { [userId]: bool }
@@ -102,6 +108,48 @@ export default function Admin({ onBack }) {
       })
     }
     setTimeout(() => setActionMsg(null), 3500)
+  }
+
+  function openEditName(u) {
+    setEditNameUser(u)
+    setEditNameValue(u.name || '')
+    setEditNameMsg(null)
+  }
+
+  async function saveEditName() {
+    const newName = editNameValue.trim()
+    if (!newName) {
+      setEditNameMsg({ type: 'error', text: 'O nome não pode ficar em branco.' })
+      return
+    }
+    if (newName === editNameUser.name) {
+      setEditNameUser(null)
+      return
+    }
+
+    setEditNameSaving(true)
+    setEditNameMsg(null)
+
+    const oldName = editNameUser.name
+    const { error } = await supabase
+      .from('profiles')
+      .update({ name: newName })
+      .eq('id', editNameUser.id)
+
+    if (error) {
+      setEditNameMsg({ type: 'error', text: 'Erro ao atualizar o nome.' })
+      setEditNameSaving(false)
+      return
+    }
+
+    setUsers(prev => prev.map(p => p.id === editNameUser.id ? { ...p, name: newName } : p))
+    logActivity({ action: 'edit_name', target: editNameUser.email, details: { nome_antigo: oldName, nome_novo: newName } })
+    setEditNameMsg({ type: 'success', text: 'Nome atualizado com sucesso!' })
+    setEditNameSaving(false)
+    setTimeout(() => {
+      setEditNameUser(null)
+      setEditNameMsg(null)
+    }, 1000)
   }
 
   async function openPerms(u) {
@@ -506,7 +554,16 @@ export default function Admin({ onBack }) {
                             />
                           </label>
                           <div>
-                            <p className="text-white text-sm font-medium leading-none">{u.name}</p>
+                            <div className="flex items-center gap-1.5 group/name">
+                              <p className="text-white text-sm font-medium leading-none">{u.name}</p>
+                              <button
+                                onClick={() => openEditName(u)}
+                                className="text-slate-600 hover:text-brand transition-colors opacity-0 group-hover/name:opacity-100"
+                                title="Editar nome"
+                              >
+                                <Pencil className="w-3 h-3" />
+                              </button>
+                            </div>
                             <p className="text-slate-500 text-xs mt-0.5">{u.email}</p>
                           </div>
                         </div>
@@ -754,6 +811,75 @@ export default function Admin({ onBack }) {
 
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Editar Nome ── */}
+      {editNameUser && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="bg-surface-card border border-surface-border rounded-2xl p-8 w-full max-w-sm shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-white font-bold text-lg">Editar Nome</h2>
+              <button
+                type="button"
+                onClick={() => { setEditNameUser(null); setEditNameMsg(null) }}
+                className="text-slate-500 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={e => { e.preventDefault(); saveEditName() }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="text-xs text-slate-500 uppercase tracking-wider">Nome</label>
+                <input
+                  type="text"
+                  value={editNameValue}
+                  onChange={e => setEditNameValue(e.target.value)}
+                  placeholder="Nome do colaborador"
+                  autoFocus
+                  required
+                  className="w-full mt-1 bg-surface border border-surface-border text-white placeholder-slate-600
+                             rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand transition-colors"
+                />
+                <p className="text-slate-500 text-xs mt-1">{editNameUser.email}</p>
+              </div>
+
+              {editNameMsg && (
+                <div className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm
+                  ${editNameMsg.type === 'success'
+                    ? 'bg-green-500/10 border border-green-500/30 text-green-400'
+                    : 'bg-red-500/10 border border-red-500/30 text-red-400'}`}>
+                  {editNameMsg.type === 'success' ? <CheckCircle className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
+                  {editNameMsg.text}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setEditNameUser(null); setEditNameMsg(null) }}
+                  disabled={editNameSaving}
+                  className="flex-1 text-sm font-medium px-4 py-2.5 rounded-lg border border-surface-border
+                             text-slate-400 hover:text-white hover:border-slate-500 transition-colors disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={editNameSaving}
+                  className="flex-1 text-sm font-bold px-4 py-2.5 rounded-lg
+                             bg-brand hover:bg-brand/90 text-black transition-colors
+                             flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  {editNameSaving ? <><Loader2 className="w-4 h-4 animate-spin" /> Salvando...</> : 'Salvar'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
