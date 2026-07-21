@@ -572,11 +572,11 @@ export default function Admin({ onBack }) {
                             />
                           </label>
                           <div>
-                            <div className="flex items-center gap-1.5 group/name">
+                            <div className="flex items-center gap-1.5">
                               <p className="text-white text-sm font-medium leading-none">{u.name}</p>
                               <button
                                 onClick={() => openEditName(u)}
-                                className="text-slate-600 hover:text-brand transition-colors opacity-0 group-hover/name:opacity-100"
+                                className="text-white hover:text-brand transition-colors"
                                 title="Editar nome"
                               >
                                 <Pencil className="w-3 h-3" />
